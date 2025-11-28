@@ -3,4 +3,5 @@ lualatexp
 
 This repo tracks luatex templates.
 
-All files under image/ are licensed under MDM-2.1.
+All files under image/ are licensed under MDM-2.1. They are stored in image39
+bucket.
