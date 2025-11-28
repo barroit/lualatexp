@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+autom4te.cache
+configure
+configure~
+
+config.h
+config.h.in
+config.log
+config.mak
+config.status
+
+feature.h
+feature.m4
+
+*.tex.1
