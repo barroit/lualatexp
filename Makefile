@@ -54,16 +54,19 @@ $(install-y): %/install: %.tex $(prefix) $(prefix)/image $(prefix)/LICENSES
 	>.install-$*
 
 	cp $< $(prefix) && \
-	printf '$(prefix)/%s\n' $< >>.install-$*
+	printf '$(prefix)/$<\n' >>.install-$*
 
 	cp image/* $(prefix)/image && \
 	printf '$(prefix)/%s\n' image/* >>.install-$*
 
-	cp LICENSES/MDM-2.1 $(prefix)/LICENSES && \
-	printf '$(prefix)/%s\n' LICENSES/MDM-2.1 >>.install-$*
+	cp LICENSES/* $(prefix)/LICENSES && \
+	printf '$(prefix)/%s\n' LICENSES/* >>.install-$*
 
-	cp LICENSES/MPL-2.0 $(prefix)/LICENSES && \
-	printf '$(prefix)/%s\n' LICENSES/MPL-2.0 >>.install-$*
+	cp install/Makefile $(prefix) && \
+	printf '$(prefix)/Makefile\n' >>.install-$*
+
+	cp install/.gitignore $(prefix) && \
+	printf '$(prefix)/.gitignore\n' >>.install-$*
 
 feature.h: ../feature.h.in ../config.h config.h
 	$(CPP) -P -dD -undef -nostdinc $< | \
