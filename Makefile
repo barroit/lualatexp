@@ -23,6 +23,8 @@ recurse-exec = $(subdir-exec) -f $(topmake) $<
 
 .PHONY: $(clean-y) $(distclean-y) $(tex-y) $(out-y)
 
+$(out-y):
+
 configure: configure.ac
 	autoheader
 	autoconf
