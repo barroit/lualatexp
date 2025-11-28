@@ -14,3 +14,5 @@ feature.h
 feature.m4
 
 *.tex.1
+
+/*.tex
