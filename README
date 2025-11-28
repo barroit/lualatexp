@@ -1,4 +1,6 @@
 lualatexp
 =========
 
-This repo tracks slide template for luatex.
+This repo tracks luatex templates.
+
+All files under image/ are licensed under MDM-2.1.

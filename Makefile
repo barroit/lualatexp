@@ -14,16 +14,17 @@ feature-m4-y := $(addsuffix /feature.m4,$(types))
 tex-y := $(wildcard $(addsuffix /template/*.tex,$(types)))
 tex-y := $(subst /template,,$(tex-y))
 
-out-y := $(addsuffix .tex,$(types))
+output-y  := $(addsuffix .tex,$(types))
+install-y := $(addsuffix /install,$(types))
 
 subdir-exec  = $(MAKE) -C $$(dirname $@)
 recurse-exec = $(subdir-exec) -f $(topmake) $<
 
 -include config.mak
 
-.PHONY: $(clean-y) $(distclean-y) $(tex-y) $(out-y)
+.PHONY: $(clean-y) $(distclean-y) $(tex-y) $(output-y) $(install-y)
 
-$(out-y):
+$(output-y):
 
 configure: configure.ac
 	autoheader
@@ -42,6 +43,27 @@ distclean: clean
 
 %.tex.1: feature.m4 template/%.tex
 	$(M4) $^ | awk 'NF { p = 1 } p' | tac | awk 'NF { p = 1 } p' | tac >$@
+
+$(prefix):
+	mkdir -p $@
+
+$(prefix)/%:
+	mkdir $@
+
+$(install-y): %/install: %.tex $(prefix) $(prefix)/image $(prefix)/LICENSES
+	>.install-$*
+
+	cp $< $(prefix) && \
+	printf '$(prefix)/%s\n' $< >>.install-$*
+
+	cp image/* $(prefix)/image && \
+	printf '$(prefix)/%s\n' image/* >>.install-$*
+
+	cp LICENSES/MDM-2.1 $(prefix)/LICENSES && \
+	printf '$(prefix)/%s\n' LICENSES/MDM-2.1 >>.install-$*
+
+	cp LICENSES/MPL-2.0 $(prefix)/LICENSES && \
+	printf '$(prefix)/%s\n' LICENSES/MPL-2.0 >>.install-$*
 
 feature.h: ../feature.h.in ../config.h config.h
 	$(CPP) -P -dD -undef -nostdinc $< | \
@@ -67,5 +89,5 @@ $(distclean-y): distclean
 $(tex-y):
 	$(subdir-exec) -f $(topmake) $$(basename $@)
 
-$(out-y): %.tex:
+$(output-y): %.tex:
 	$(MAKE) -C $* -f $(topmake) -f target.mak ../$@

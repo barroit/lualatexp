@@ -2,3 +2,5 @@
 
 export CPP := @CPP@
 export M4  := @M4@
+
+export prefix := @prefix@
