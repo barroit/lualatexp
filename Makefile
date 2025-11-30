@@ -71,7 +71,7 @@ $(install-y): %/install: %.tex $(prefix) $(prefix)/image $(prefix)/LICENSES
 feature.h: ../feature.h.in ../config.h config.h
 	$(CPP) -P -dD -undef -nostdinc $< | \
 	awk '/[^[:space:]]/' | \
-	grep -vF -e '#define __STDC_' \
+	grep -vF -e '#define __' \
 		 -e '#define PACKAGE_' \
 		 -e '#undef PACKAGE_' >$@ || true
 
