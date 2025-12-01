@@ -15,5 +15,7 @@ feature.m4
 
 *.tex.1
 
+*/Makefile.gen
+
 /*.tex
 /.install-*

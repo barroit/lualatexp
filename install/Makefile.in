@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+prefix ?= build
+name   ?= PROFILE
+
+input  := $(name).tex
+output := $(prefix)/$(name).pdf
+
+$(output):
+
+$(prefix):
+	mkdir -p $@
+
+$(output): $(input) $(prefix)
+	lualatex --output-directory=$(prefix) --jobname=$(name) $<

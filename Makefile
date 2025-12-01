@@ -14,15 +14,18 @@ feature-m4-y := $(addsuffix /feature.m4,$(types))
 tex-y := $(wildcard $(addsuffix /template/*.tex,$(types)))
 tex-y := $(subst /template,,$(tex-y))
 
-output-y  := $(addsuffix .tex,$(types))
-install-y := $(addsuffix /install,$(types))
+output-y   := $(addsuffix .tex,$(types))
+install-y  := $(addsuffix /install,$(types))
+makefile-y := $(addsuffix /Makefile.gen,$(types))
 
-subdir-exec  = $(MAKE) -C $$(dirname $@)
-recurse-exec = $(subdir-exec) -f $(topmake) $<
+makesub      = $(MAKE) -C $$(dirname $@) -f $(topmake)
+subdir-exec  = $(makesub) $$(basename $@)
+recurse-exec = $(makesub) $<
 
 -include config.mak
 
-.PHONY: $(clean-y) $(distclean-y) $(tex-y) $(output-y) $(install-y)
+.PHONY: $(clean-y) $(distclean-y) \
+	$(tex-y) $(output-y) $(makefile-y) $(install-y)
 
 $(output-y):
 
@@ -34,7 +37,8 @@ clean:
 	rm -f config.mak config.h && \
 	rm -f config.log config.status && \
 	rm -f feature.h feature.m4 && \
-	rm -f *.tex.1 *.tex
+	rm -f *.tex.1 *.tex && \
+	rm -f Makefile.gen .install-*
 
 distclean: clean
 	rm -rf autom4te.cache && \
@@ -50,7 +54,8 @@ $(prefix):
 $(prefix)/%:
 	mkdir $@
 
-$(install-y): %/install: %.tex $(prefix) $(prefix)/image $(prefix)/LICENSES
+$(install-y): %/install: %.tex $(prefix) $(prefix)/image $(prefix)/LICENSES \
+			 %/Makefile.gen
 	>.install-$*
 
 	cp $< $(prefix) && \
@@ -62,7 +67,7 @@ $(install-y): %/install: %.tex $(prefix) $(prefix)/image $(prefix)/LICENSES
 	cp LICENSES/* $(prefix)/LICENSES && \
 	printf '$(prefix)/%s\n' LICENSES/* >>.install-$*
 
-	cp install/Makefile $(prefix) && \
+	cp $*/Makefile.gen $(prefix)/Makefile && \
 	printf '$(prefix)/Makefile\n' >>.install-$*
 
 	cp install/.gitignore $(prefix) && \
@@ -81,6 +86,9 @@ feature.m4: feature.h
 		printf "define(\`%s', \`%s')\n" $$name $$val; \
 	done <$<
 
+Makefile.gen: feature.m4 ../install/Makefile.in
+	$(M4) $^ | awk 'NF { p = 1 } p' >$@
+
 $(configure-y): %: configure %.ac
 	$(recurse-exec)
 
@@ -91,7 +99,10 @@ $(distclean-y): distclean
 	$(recurse-exec)
 
 $(tex-y):
-	$(subdir-exec) -f $(topmake) $$(basename $@)
+	$(subdir-exec)
 
 $(output-y): %.tex:
 	$(MAKE) -C $* -f $(topmake) -f target.mak ../$@
+
+$(makefile-y):
+	$(subdir-exec)
